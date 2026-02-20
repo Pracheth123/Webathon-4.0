@@ -1,0 +1,794 @@
+{
+  "info": {
+    "name": "Civic Governance API",
+    "description": "Community Micro-Task Platform API Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/health",
+              "host": ["{{BASE_URL}}"],
+              "path": ["health"]
+            }
+          }
+        },
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"Test123456\",\n  \"confirmPassword\": \"Test123456\",\n  \"phone\": \"9876543210\",\n  \"role\": \"volunteer\",\n  \"societyId\": \"{{SOCIETY_ID}}\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/register",
+              "host": ["{{BASE_URL}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"Test123456\",\n  \"societyId\": \"{{SOCIETY_ID}}\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/login",
+              "host": ["{{BASE_URL}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Verify Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/auth/verify",
+              "host": ["{{BASE_URL}}"],
+              "path": ["auth", "verify"]
+            }
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"Test123456\",\n  \"newPassword\": \"NewTest123\",\n  \"confirmPassword\": \"NewTest123\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/change-password",
+              "host": ["{{BASE_URL}}"],
+              "path": ["auth", "change-password"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/users/profile",
+              "host": ["{{BASE_URL}}"],
+              "path": ["users", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe Updated\",\n  \"phone\": \"9876543210\",\n  \"bio\": \"Passionate about community service\",\n  \"address\": \"123 Main Street\",\n  \"city\": \"Mumbai\",\n  \"pinCode\": \"400001\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/users/profile",
+              "host": ["{{BASE_URL}}"],
+              "path": ["users", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Get Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/users/stats",
+              "host": ["{{BASE_URL}}"],
+              "path": ["users", "stats"]
+            }
+          }
+        },
+        {
+          "name": "Get Leaderboard Position",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/users/leaderboard",
+              "host": ["{{BASE_URL}}"],
+              "path": ["users", "leaderboard"]
+            }
+          }
+        },
+        {
+          "name": "Get Contributions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/users/contributions?page=1&limit=10",
+              "host": ["{{BASE_URL}}"],
+              "path": ["users", "contributions"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Badges",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/users/badges",
+              "host": ["{{BASE_URL}}"],
+              "path": ["users", "badges"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Society",
+      "item": [
+        {
+          "name": "Search Societies",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/societies/search?query=Mumbai&city=Mumbai",
+              "host": ["{{BASE_URL}}"],
+              "path": ["societies", "search"],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "Mumbai"
+                },
+                {
+                  "key": "city",
+                  "value": "Mumbai"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Nearby Societies",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/societies/nearby?latitude=19.0760&longitude=72.8777&distance=10000",
+              "host": ["{{BASE_URL}}"],
+              "path": ["societies", "nearby"],
+              "query": [
+                {
+                  "key": "latitude",
+                  "value": "19.0760"
+                },
+                {
+                  "key": "longitude",
+                  "value": "72.8777"
+                },
+                {
+                  "key": "distance",
+                  "value": "10000"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Society Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/societies/{{SOCIETY_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["societies", "{{SOCIETY_ID}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Society Members",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/societies/{{SOCIETY_ID}}/members?page=1&limit=20",
+              "host": ["{{BASE_URL}}"],
+              "path": ["societies", "{{SOCIETY_ID}}", "members"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Society Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/societies/{{SOCIETY_ID}}/stats",
+              "host": ["{{BASE_URL}}"],
+              "path": ["societies", "{{SOCIETY_ID}}", "stats"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Issues",
+      "item": [
+        {
+          "name": "Create Issue",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Broken Streetlight\",\n  \"description\": \"The streetlight near the park is not working\",\n  \"latitude\": 19.0760,\n  \"longitude\": 72.8777,\n  \"address\": \"Near Central Park\",\n  \"landmark\": \"Park Entrance\",\n  \"image\": \"https://via.placeholder.com/300\",\n  \"tags\": [\"electricity\", \"safety\"]\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/issues",
+              "host": ["{{BASE_URL}}"],
+              "path": ["issues"]
+            }
+          }
+        },
+        {
+          "name": "Get Issues for Society",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/issues/{{SOCIETY_ID}}?status=open&page=1&limit=10",
+              "host": ["{{BASE_URL}}"],
+              "path": ["issues", "{{SOCIETY_ID}}"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "open"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Issue Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/issues/detail/{{ISSUE_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["issues", "detail", "{{ISSUE_ID}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Nearby Issues",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/issues/nearby?latitude=19.0760&longitude=72.8777&distance=5000",
+              "host": ["{{BASE_URL}}"],
+              "path": ["issues", "nearby"],
+              "query": [
+                {
+                  "key": "latitude",
+                  "value": "19.0760"
+                },
+                {
+                  "key": "longitude",
+                  "value": "72.8777"
+                },
+                {
+                  "key": "distance",
+                  "value": "5000"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add Contribution to Issue",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"I also observed this issue yesterday\",\n  \"image\": \"https://via.placeholder.com/300\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/issues/{{ISSUE_ID}}/contribute",
+              "host": ["{{BASE_URL}}"],
+              "path": ["issues", "{{ISSUE_ID}}", "contribute"]
+            }
+          }
+        },
+        {
+          "name": "Update Issue Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"resolved\",\n  \"resolutionNotes\": \"Streetlight has been repaired\",\n  \"proofImage\": \"https://via.placeholder.com/300\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/issues/{{ISSUE_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["issues", "{{ISSUE_ID}}"]
+            }
+          }
+        },
+        {
+          "name": "Escalate Issue",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Issue has not been resolved for 30 days, escalating to municipal authorities\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/issues/{{ISSUE_ID}}/escalate",
+              "host": ["{{BASE_URL}}"],
+              "path": ["issues", "{{ISSUE_ID}}", "escalate"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tasks",
+      "item": [
+        {
+          "name": "Create Task",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Document Pothole on Main Street\",\n  \"description\": \"Please take photos of the pothole near the market corner\",\n  \"type\": \"image-capture\",\n  \"category\": \"street-damage\",\n  \"requirements\": [\"Clear photo\", \"Daylight\"],\n  \"estimatedTime\": 10,\n  \"difficulty\": \"easy\",\n  \"latitude\": 19.0760,\n  \"longitude\": 72.8777,\n  \"address\": \"Main Street Market\",\n  \"pointsReward\": 20\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/tasks",
+              "host": ["{{BASE_URL}}"],
+              "path": ["tasks"]
+            }
+          }
+        },
+        {
+          "name": "Get Tasks for Society",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/tasks/{{SOCIETY_ID}}?status=open&page=1&limit=10",
+              "host": ["{{BASE_URL}}"],
+              "path": ["tasks", "{{SOCIETY_ID}}"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "open"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Task Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/tasks/detail/{{TASK_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["tasks", "detail", "{{TASK_ID}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Nearby Tasks",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/tasks/nearby?latitude=19.0760&longitude=72.8777&distance=5000",
+              "host": ["{{BASE_URL}}"],
+              "path": ["tasks", "nearby"],
+              "query": [
+                {
+                  "key": "latitude",
+                  "value": "19.0760"
+                },
+                {
+                  "key": "longitude",
+                  "value": "72.8777"
+                },
+                {
+                  "key": "distance",
+                  "value": "5000"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Accept Task",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/tasks/{{TASK_ID}}/accept",
+              "host": ["{{BASE_URL}}"],
+              "path": ["tasks", "{{TASK_ID}}", "accept"]
+            }
+          }
+        },
+        {
+          "name": "Submit Task",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Pothole documented with clear photos\",\n  \"images\": [\"https://via.placeholder.com/300\"],\n  \"latitude\": 19.0760,\n  \"longitude\": 72.8777\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/tasks/{{TASK_ID}}/submit",
+              "host": ["{{BASE_URL}}"],
+              "path": ["tasks", "{{TASK_ID}}", "submit"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "Get Notifications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/notifications?page=1&limit=10",
+              "host": ["{{BASE_URL}}"],
+              "path": ["notifications"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Unread Count",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/notifications/unread/count",
+              "host": ["{{BASE_URL}}"],
+              "path": ["notifications", "unread", "count"]
+            }
+          }
+        },
+        {
+          "name": "Mark as Read",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/notifications/{{NOTIFICATION_ID}}/read",
+              "host": ["{{BASE_URL}}"],
+              "path": ["notifications", "{{NOTIFICATION_ID}}", "read"]
+            }
+          }
+        },
+        {
+          "name": "Mark All as Read",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/notifications/read-all",
+              "host": ["{{BASE_URL}}"],
+              "path": ["notifications", "read-all"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "BASE_URL",
+      "value": "http://localhost:5000/api",
+      "type": "string"
+    },
+    {
+      "key": "TOKEN",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "SOCIETY_ID",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "ISSUE_ID",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "TASK_ID",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "NOTIFICATION_ID",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
