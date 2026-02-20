@@ -1,0 +1,6 @@
+{
+  "name": "civic-governance-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Civic Micro-Execution Governance Platform monorepo"
+}
