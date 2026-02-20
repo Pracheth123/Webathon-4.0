@@ -3,6 +3,7 @@ import { motion, useInView } from 'framer-motion'
 import { Map, Shield, Zap, Award, BarChart2, Users } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import AnimatedButton from '../common/AnimatedButton'
+import { useAuth } from '../../context/AuthContext'
 
 const FEATURES = [
   {
@@ -71,6 +72,15 @@ export default function FeatureShowcase() {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-80px' })
   const navigate = useNavigate()
+  const { user } = useAuth()
+
+  const handleProtectedNav = (path) => {
+    if (!user) {
+      navigate('/login', { state: { redirectTo: path } })
+      return
+    }
+    navigate(path)
+  }
 
   return (
     <section ref={ref} className="py-20 px-4 bg-base-200/30">
@@ -123,10 +133,10 @@ export default function FeatureShowcase() {
             Join thousands of citizens already transforming their communities.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
-            <AnimatedButton variant="primary" size="lg" glow onClick={() => navigate('/dashboard')}>
+            <AnimatedButton variant="primary" size="lg" glow onClick={() => handleProtectedNav('/report')}>
               Start Contributing
             </AnimatedButton>
-            <AnimatedButton variant="outline" size="lg" onClick={() => navigate('/map')}>
+            <AnimatedButton variant="outline" size="lg" onClick={() => handleProtectedNav('/map')}>
               View Live Issues
             </AnimatedButton>
           </div>
