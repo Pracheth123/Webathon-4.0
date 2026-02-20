@@ -226,7 +226,10 @@ export default function Dashboard() {
           ))}
 
           {selectedIssue && (
-            <MarkerModal issue={selectedIssue} onClose={() => setSelectedIssue(null)} />
+            <MarkerModal
+              issue={selectedIssue}
+              onClose={() => setSelectedIssue(null)}
+            />
           )}
         </div>
       </div>

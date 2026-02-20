@@ -1,18 +1,10 @@
 {
-<<<<<<< HEAD
-  "name": "civic-governance-platform",
-  "version": "1.0.0",
-  "private": true,
-  "description": "Civic Micro-Execution Governance Platform monorepo"
-}
-=======
   "name": "civic-governance-client",
   "private": true,
   "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "start": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -36,4 +28,3 @@
     "vite-plugin-svgr": "^4.3.0"
   }
 }
->>>>>>> 2b92c0d (Initial Final Frontend)
