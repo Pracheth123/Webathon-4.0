@@ -1,37 +1,53 @@
-import { motion } from 'framer-motion'
-import { MapPin, Clock, ThumbsUp, CheckSquare, Zap, ArrowUpCircle, X } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
-import SeverityBadge from '../common/SeverityBadge'
-import AnimatedButton from '../common/AnimatedButton'
-import { api } from '../../services/api'
-import { useState } from 'react'
+import { motion } from "framer-motion";
+import {
+  MapPin,
+  Clock,
+  ThumbsUp,
+  CheckSquare,
+  ArrowUpCircle,
+  X,
+  Eye,
+  Shield,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import SeverityBadge from "../common/SeverityBadge";
+import AnimatedButton from "../common/AnimatedButton";
+import { api } from "../../services/api";
+import { useState } from "react";
+import { useAuth } from "../../context/AuthContext";
+import useVolunteerStore from "../../store/useVolunteerStore";
 
 function timeAgo(dateStr) {
-  const diff = Date.now() - new Date(dateStr).getTime()
-  const d = Math.floor(diff / 86400000)
-  if (d > 0) return `${d}d ago`
-  const h = Math.floor(diff / 3600000)
-  if (h > 0) return `${h}h ago`
-  return 'Just now'
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const d = Math.floor(diff / 86400000);
+  if (d > 0) return `${d}d ago`;
+  const h = Math.floor(diff / 3600000);
+  if (h > 0) return `${h}h ago`;
+  return "Just now";
 }
 
 export default function MarkerModal({ issue, onClose }) {
-  const navigate = useNavigate()
-  const [escalating, setEscalating] = useState(false)
-  const [escalated, setEscalated] = useState(false)
+  const navigate = useNavigate();
+  const [escalating, setEscalating] = useState(false);
+  const [escalated, setEscalated] = useState(false);
+  const { role } = useAuth();
 
-  if (!issue) return null
+  if (!issue) return null;
 
-  const progress = issue.taskCount > 0
-    ? Math.round((issue.completedTasks / issue.taskCount) * 100)
-    : 0
+  const progress =
+    issue.taskCount > 0
+      ? Math.round((issue.completedTasks / issue.taskCount) * 100)
+      : 0;
 
   const handleEscalate = async () => {
-    setEscalating(true)
-    await api.issues.escalate(issue.id)
-    setEscalating(false)
-    setEscalated(true)
-  }
+    setEscalating(true);
+    await api.issues.escalate(issue.id);
+    setEscalating(false);
+    setEscalated(true);
+  };
+
+  const addRequest = useVolunteerStore((s) => s.addRequest);
+  const [requested, setRequested] = useState(false);
 
   return (
     <motion.div
@@ -39,11 +55,15 @@ export default function MarkerModal({ issue, onClose }) {
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 20, scale: 0.95 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+      transition={{ type: "spring", stiffness: 300, damping: 28 }}
     >
       {/* Image */}
       <div className="relative h-36 overflow-hidden">
-        <img src={issue.imageUrl} alt={issue.title} className="w-full h-full object-cover" />
+        <img
+          src={issue.imageUrl}
+          alt={issue.title}
+          className="w-full h-full object-cover"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         <button
           className="absolute top-2 right-2 btn btn-ghost btn-xs btn-square glass"
@@ -58,61 +78,114 @@ export default function MarkerModal({ issue, onClose }) {
 
       {/* Body */}
       <div className="p-4 space-y-3">
-        <h3 className="font-bold text-base-content text-sm leading-snug">{issue.title}</h3>
+        <h3 className="font-bold text-base-content text-sm leading-snug">
+          {issue.title}
+        </h3>
 
         <div className="flex items-center gap-1 text-base-content/50">
           <MapPin size={11} />
           <span className="text-meta text-[0.62rem]">{issue.location}</span>
         </div>
 
-        <p className="text-xs text-base-content/60 line-clamp-2">{issue.description}</p>
+        <p className="text-xs text-base-content/60 line-clamp-2">
+          {issue.description}
+        </p>
 
         {/* Meta row */}
         <div className="flex items-center justify-between text-xs text-base-content/40">
-          <span className="flex items-center gap-1"><Clock size={11} />{timeAgo(issue.reportedAt)}</span>
-          <span className="flex items-center gap-1"><ThumbsUp size={11} />{issue.upvotes}</span>
-          <span className="flex items-center gap-1"><CheckSquare size={11} />{issue.completedTasks}/{issue.taskCount} tasks</span>
+          <span className="flex items-center gap-1">
+            <Clock size={11} />
+            {timeAgo(issue.reportedAt)}
+          </span>
+          <span className="flex items-center gap-1">
+            <ThumbsUp size={11} />
+            {issue.upvotes}
+          </span>
+          <span className="flex items-center gap-1">
+            <CheckSquare size={11} />
+            {issue.completedTasks}/{issue.taskCount} tasks
+          </span>
         </div>
 
         {/* Progress */}
         {issue.taskCount > 0 && (
           <div>
             <div className="flex justify-between mb-1">
-              <span className="text-meta text-base-content/40">Resolution Progress</span>
+              <span className="text-meta text-base-content/40">
+                Resolution Progress
+              </span>
               <span className="text-meta text-primary">{progress}%</span>
             </div>
-            <progress className="progress progress-primary h-1.5 w-full" value={progress} max="100" />
+            <progress
+              className="progress progress-primary h-1.5 w-full"
+              value={progress}
+              max="100"
+            />
           </div>
         )}
 
         {/* Actions */}
         <div className="flex gap-2 pt-1">
-          <AnimatedButton
-            variant="primary"
-            size="sm"
-            className="flex-1"
-            onClick={() => navigate(`/volunteer/task_00${issue.id}`)}
-          >
-            <Zap size={13} /> Volunteer
-          </AnimatedButton>
-          <AnimatedButton
-            variant={escalated ? 'success' : 'error'}
-            size="sm"
-            className="flex-1"
-            disabled={escalating || escalated}
-            onClick={handleEscalate}
-          >
-            {escalating ? (
-              <span className="loading loading-spinner loading-xs" />
-            ) : (
-              <>
-                <ArrowUpCircle size={13} />
-                {escalated ? 'Escalated' : 'Escalate'}
-              </>
-            )}
-          </AnimatedButton>
-        </div>
-      </div>
-    </motion.div>
-  )
-}
+          {role === "citizen" && (
+            <>
+              <AnimatedButton
+                variant="primary"
+                size="sm"
+                className="flex-1"
+                onClick={() => navigate("/dashboard")}
+              >
+                <Eye size={13} /> Follow Progress
+              </AnimatedButton>
+
+              {/* Volunteer CTA for medium/low severity */}
+              {["medium", "low"].includes(issue.severity) &&
+                issue.status !== "completed" && (
+                  <AnimatedButton
+                    variant={requested ? "success" : "outline"}
+                    size="sm"
+                    className="flex-1"
+                    disabled={requested}
+                    onClick={async () => {
+                      setRequested(true);
+                      addRequest({
+                        taskTitle: `Volunteer for: ${issue.title}`,
+                        issueTitle: issue.title,
+                        estimatedTime: "30 min",
+                        volunteer: useAuth().user?.name || "Anonymous",
+                        issueId: issue.id,
+                      });
+                      // Optionally inform backend (omitted for demo)
+                    }}
+                  >
+                    {requested ? "Requested" : "Volunteer"}
+                  </AnimatedButton>
+                )}
+            </>
+          )}
+
+          {role === "local_head" && (
+            <>
+              <AnimatedButton
+                variant="primary"
+                size="sm"
+                className="flex-1"
+                onClick={() => navigate("/head")}
+              >
+                <Shield size={13} /> Open Queue
+              </AnimatedButton>
+              <AnimatedButton
+                variant={escalated ? "success" : "error"}
+                size="sm"
+                className="flex-1"
+                disabled={escalating || escalated}
+                onClick={handleEscalate}
+              >
+                {escalating ? (
+                  <span className="loading loading-spinner loading-xs" />
+                ) : (
+                  <>
+                    <ArrowUpCircle size={13} />
+                    {escalated ? "Escalated" : "Escalate"}
+                  </>
+                )}
+              </AnimatedButto
