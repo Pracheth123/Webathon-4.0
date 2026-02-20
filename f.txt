@@ -1,0 +1,117 @@
+
+
+# Existing Structure (preserved exactly)
+
+```
+client/
+├── src/
+│   ├── context/
+│   │   └── AuthContext.js      ← fill with auth state
+│   ├── pages/
+│   │   ├── Analytics.jsx       ← fill → Analytics / Stats for Local Head
+│   │   ├── Dashboard.jsx       ← fill → User Dashboard (Civic Score, Badges)
+│   │   ├── Escalations.jsx     ← fill → Local Head Dashboard (issue queue)
+│   │   ├── Issues.jsx          ← fill → Public Transparency Map
+│   │   └── Login.jsx           ← fill → Login page
+│   ├── services/
+│   │   └── api.js              ← fill with mock API service
+│   ├── App.jsx                 ← fill with Router + layout
+│   └── main.jsx                ← fill with React + Tailwind bootstrap
+```
+
+# New Additions (inside existing `client/src/`)
+
+```
+client/
+├── index.html                          ← NEW (Vite entry)
+├── vite.config.js                      ← NEW
+├── src/
+│   ├── components/                     ← NEW
+│   │   ├── common/
+│   │   │   ├── AnimatedButton.jsx
+│   │   │   ├── GlassModal.jsx
+│   │   │   ├── IssueCard.jsx
+│   │   │   ├── SeverityBadge.jsx
+│   │   │   ├── PriorityScore.jsx
+│   │   │   └── Navbar.jsx
+│   │   ├── landing/
+│   │   │   ├── HeroSection.jsx
+│   │   │   ├── LiveStats.jsx
+│   │   │   └── FeatureShowcase.jsx
+│   │   ├── map/
+│   │   │   ├── IssueMarker.jsx
+│   │   │   └── MarkerModal.jsx
+│   │   ├── dashboard/
+│   │   │   ├── CivicScoreCard.jsx
+│   │   │   ├── ReliabilityMeter.jsx
+│   │   │   ├── ContributionTimeline.jsx
+│   │   │   ├── BadgeCollection.jsx
+│   │   │   └── Leaderboard.jsx
+│   │   ├── head-dashboard/
+│   │   │   ├── IssueList.jsx
+│   │   │   ├── SeverityFilter.jsx
+│   │   │   ├── DeadlineCountdown.jsx
+│   │   │   └── TaskVerificationPanel.jsx
+│   │   └── volunteer/
+│   │       ├── TaskStepper.jsx
+│   │       ├── BeforeAfterPreview.jsx
+│   │       └── SubmissionCelebration.jsx
+│   ├── data/
+│   │   └── mockData.js                 ← NEW
+│   ├── pages/                          ← EXISTING + 2 new pages
+│   │   ├── Landing.jsx                 ← NEW
+│   │   └── VolunteerTask.jsx           ← NEW
+│   ├── store/
+│   │   ├── useIssueStore.js            ← NEW
+│   │   └── useUserStore.js             ← NEW
+│   └── styles/
+│       └── index.css                   ← NEW (daisyUI theme)
+```
+
+# Page → File Mapping
+
+| Required Page | File Used | Status |
+|---|---|---|
+| Landing Page | `pages/Landing.jsx` | New file |
+| Public Transparency Map | `pages/Issues.jsx` | Fill existing |
+| User Dashboard | `pages/Dashboard.jsx` | Fill existing |
+| Local Head Dashboard | `pages/Escalations.jsx` | Fill existing |
+| Analytics / Stats | `pages/Analytics.jsx` | Fill existing |
+| Volunteer Task | `pages/VolunteerTask.jsx` | New file |
+| Login | `pages/Login.jsx` | Fill existing |
+
+# Implementation Phases
+
+| Phase | Files | What gets done |
+|---|---|---|
+| **1. Setup** | `client/package.json`, `vite.config.js`, `index.html`, `styles/index.css` | Vite React scaffold, install all packages, daisyUI dark theme, glass utilities |
+| **2. Data Layer** | `data/mockData.js`, `services/api.js`, `store/*.js`, `context/AuthContext.js` | Mock issues/users/badges/tasks, Zustand stores, auth context |
+| **3. Shared Components** | `components/common/*` | AnimatedButton, GlassModal, SeverityBadge, PriorityScore, IssueCard, Navbar |
+| **4. Landing** | `components/landing/*`, `pages/Landing.jsx` | Animated hero, live stat counters, feature showcase, CTAs |
+| **5. Map** | `components/map/*`, `pages/Issues.jsx` | React Map GL fullscreen, color-coded markers, pulsing high-severity, glass modal |
+| **6. User Dashboard** | `components/dashboard/*`, `pages/Dashboard.jsx` | Bento grid, civic score ring, reliability meter, timeline, badges, leaderboard |
+| **7. Local Head Dashboard** | `components/head-dashboard/*`, `pages/Escalations.jsx` | Priority issue list, severity filters, countdown, verify panel, escalate button |
+| **8. Analytics** | `pages/Analytics.jsx` | Stats, charts, civic metrics for Local Head |
+| **9. Volunteer Task** | `components/volunteer/*`, `pages/VolunteerTask.jsx` | Step-by-step UI, before/after diff, confetti celebration |
+| **10. Router + App** | `App.jsx`, `main.jsx`, `pages/Login.jsx` | React Router v7 routes, page transitions, login page |
+
+# Definition of Done
+
+- [ ] `client/` is a fully working Vite + React app — all existing teammate files are preserved and filled with production-quality code
+- [ ] All 5 required pages are navigable, all 5 reusable components (`IssueCard`, `SeverityBadge`, `PriorityScore`, `GlassModal`, `AnimatedButton`) are implemented
+- [ ] Dark daisyUI glassmorphic theme applied throughout; Framer Motion animations on hero, markers, cards, and volunteer submission
+
+
+---
+# To-dos (11)
+- [ ] **Setup client**: init Vite React in client/, install all deps (daisyUI v5, Tailwind v4, Framer Motion, React Router v7, React Map GL, Zustand, Lucide React)
+- [ ] **Theme + styles**: daisyUI dark civic theme, glassmorphism utilities, Inter + JetBrains Mono fonts in client/src/styles/index.css
+- [ ] **Data layer**: mockData.js, fill services/api.js, Zustand stores, AuthContext.js
+- [ ] **Shared components**: AnimatedButton, GlassModal, SeverityBadge, PriorityScore, IssueCard, Navbar
+- [ ] **Landing page**: HeroSection, LiveStats counters, FeatureShowcase → Landing.jsx
+- [ ] **Map page**: React Map GL, IssueMarker with severity pulse, MarkerModal → Issues.jsx
+- [ ] **User Dashboard**: Bento grid, CivicScoreCard, ReliabilityMeter, Timeline, Badges, Leaderboard → Dashboard.jsx
+- [ ] **Local Head Dashboard**: IssueList, SeverityFilter, DeadlineCountdown, VerificationPanel, Escalate → Escalations.jsx
+- [ ] **Analytics page**: civic metrics and stats → Analytics.jsx
+- [ ] **Volunteer Task page**: TaskStepper, BeforeAfterPreview, SubmissionCelebration → VolunteerTask.jsx
+- [ ] **App shell + routing**: fill App.jsx, main.jsx, Login.jsx with React Router v7 routes and page transitions
