@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
 import { Zap } from 'lucide-react'
 import { useUserStore } from '../store/useUserStore'
 import { useAuth } from '../context/AuthContext'
-import { mockTasks } from '../data/mockData'
 import CivicScoreCard from '../components/dashboard/CivicScoreCard'
 import ReliabilityMeter from '../components/dashboard/ReliabilityMeter'
 import ContributionTimeline from '../components/dashboard/ContributionTimeline'
@@ -13,10 +13,64 @@ import IssueCard from '../components/common/IssueCard'
 import { useIssueStore } from '../store/useIssueStore'
 
 export default function Dashboard() {
-  const { user, leaderboard, timeline, badges } = useUserStore()
-  const { issues } = useIssueStore()
-  const { user: authUser } = useAuth()
+  const { user, leaderboard, timeline, badges, fetchAllUserData, loading: userLoading } = useUserStore()
+  const { issues, fetchIssues, loading: issuesLoading } = useIssueStore()
+  const { user: authUser, isAuthenticated } = useAuth()
   const navigate = useNavigate()
+
+  // Fetch data when component mounts or user changes
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login')
+      return
+    }
+
+    if (authUser?.id) {
+      // Fetch user profile, leaderboard, and badges
+      fetchAllUserData()
+
+      // Fetch issues for the user's society
+      if (authUser.societyId) {
+        fetchIssues(authUser.societyId)
+      }
+    }
+  }, [authUser?.id, authUser?.societyId, isAuthenticated, fetchAllUserData, fetchIssues, navigate])
+
+  // Show loading state
+  if (userLoading || issuesLoading) {
+    return (
+      <motion.main
+        className="container mx-auto px-4 py-8"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+      >
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="loading loading-spinner loading-lg mb-4"></div>
+            <p className="text-base-content/60">Loading your dashboard...</p>
+          </div>
+        </div>
+      </motion.main>
+    )
+  }
+
+  // Show error or redirect if not authenticated
+  if (!user || !authUser) {
+    return (
+      <motion.main
+        className="container mx-auto px-4 py-8"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+      >
+        <div className="text-center py-8">
+          <p className="text-error mb-4">Unable to load dashboard</p>
+          <button className="btn btn-primary" onClick={() => navigate('/login')}>
+            Please log in again
+          </button>
+        </div>
+      </motion.main>
+    )
+  }
 
   const myIssues = issues.slice(0, 3)
 
@@ -77,30 +131,16 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Open tasks */}
+      {/* Open tasks - Placeholder for now */}
       <div>
         <div className="flex items-center justify-between mb-4">
           <span className="text-meta text-primary">AVAILABLE TASKS</span>
+          <button className="btn btn-ghost btn-xs" onClick={() => navigate('/volunteer-task')}>
+            View all →
+          </button>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {mockTasks.map((task) => (
-            <motion.div
-              key={task.id}
-              className="glass rounded-2xl p-4 border border-white/8 cursor-pointer hover:border-primary/30 transition-colors"
-              whileHover={{ y: -3 }}
-              onClick={() => navigate(`/volunteer/${task.id}`)}
-            >
-              <div className="flex justify-between items-start mb-2">
-                <span className="text-xs font-semibold text-base-content">{task.title}</span>
-                <span className="badge badge-primary badge-xs">+{task.credits} pts</span>
-              </div>
-              <p className="text-xs text-base-content/50 line-clamp-2 mb-3">{task.description}</p>
-              <div className="flex items-center justify-between text-meta text-base-content/40">
-                <span>⏱ {task.estimatedTime}</span>
-                <span className="badge badge-ghost badge-xs">{task.difficulty}</span>
-              </div>
-            </motion.div>
-          ))}
+        <div className="text-center py-8 text-base-content/60">
+          <p>Tasks will be loaded from server</p>
         </div>
       </div>
     </motion.main>
