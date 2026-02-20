@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { Shield, Mail, Lock, Eye, EyeOff, Zap } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import AnimatedButton from '../components/common/AnimatedButton'
@@ -8,19 +8,31 @@ import AnimatedButton from '../components/common/AnimatedButton'
 export default function Login() {
   const { login } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const redirectTo = location.state?.redirectTo
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [role, setRole] = useState('citizen')
   const [showPw, setShowPw] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
+    setError('')
     await new Promise((r) => setTimeout(r, 800))
-    login(email, password, role)
-    if (role === 'local_head') navigate('/head')
-    else if (role === 'municipal') navigate('/municipal')
+    const ok = login(email, password)
+    if (!ok) {
+      setLoading(false)
+      setError('Invalid credentials. Use the demo accounts below.')
+      return
+    }
+    if (redirectTo) {
+      navigate(redirectTo)
+      return
+    }
+    if (email === 'localhead@civicpulse.in') navigate('/head')
+    else if (email === 'municipal@civicpulse.in') navigate('/municipal')
     else navigate('/dashboard')
   }
 
@@ -87,30 +99,11 @@ export default function Login() {
               </label>
             </fieldset>
 
-            {/* Role selector */}
-            <fieldset className="fieldset">
-              <legend className="fieldset-legend text-base-content/60">Sign in as</legend>
-              <div className="flex gap-3">
-                {['citizen', 'local_head', 'municipal'].map((r) => (
-                  <button
-                    key={r}
-                    type="button"
-                    className={`flex-1 glass border rounded-xl py-2.5 px-3 text-sm font-medium transition-all ${
-                      role === r
-                        ? 'border-primary/60 bg-primary/15 text-primary'
-                        : 'border-white/10 text-base-content/60 hover:border-white/20'
-                    }`}
-                    onClick={() => setRole(r)}
-                  >
-                    {r === 'citizen'
-                      ? '👤 Citizen'
-                      : r === 'local_head'
-                        ? '🛡️ Local Head'
-                        : '🏛️ Municipal'}
-                  </button>
-                ))}
+            {error && (
+              <div className="alert alert-error alert-soft text-sm">
+                {error}
               </div>
-            </fieldset>
+            )}
 
             <AnimatedButton
               type="submit"
@@ -131,9 +124,12 @@ export default function Login() {
             </AnimatedButton>
           </form>
 
-          <p className="text-center text-meta text-base-content/30 mt-6">
-            Demo — any credentials work
-          </p>
+          <div className="text-center text-meta text-base-content/30 mt-6 space-y-1">
+            <p>Demo accounts</p>
+            <p>Citizen: citizen@civicpulse.in / citizen123</p>
+            <p>Local Head: localhead@civicpulse.in / local123</p>
+            <p>Municipal: municipal@civicpulse.in / muni123</p>
+          </div>
         </div>
       </motion.div>
     </div>

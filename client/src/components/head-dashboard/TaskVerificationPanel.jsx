@@ -126,13 +126,6 @@ export default function TaskVerificationPanel({ issue }) {
         </div>
       )}
 
-      {/* Volunteer CTA */}
-      <button
-        className="btn btn-primary btn-sm w-full mt-4 gap-2"
-        onClick={() => navigate('/volunteer/task_001')}
-      >
-        <Zap size={13} /> Volunteer for This Issue
-      </button>
     </motion.div>
   )
 }

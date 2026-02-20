@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { Map, ArrowRight, Zap } from 'lucide-react'
 import AnimatedButton from '../common/AnimatedButton'
+import { useAuth } from '../../context/AuthContext'
 
 const words = [
   { text: 'Execute.', className: 'text-base-content' },
@@ -11,6 +12,15 @@ const words = [
 
 export default function HeroSection() {
   const navigate = useNavigate()
+  const { user } = useAuth()
+
+  const handleProtectedNav = (path) => {
+    if (!user) {
+      navigate('/login', { state: { redirectTo: path } })
+      return
+    }
+    navigate(path)
+  }
 
   return (
     <section className="relative min-h-[calc(100vh-64px)] flex items-center justify-center overflow-hidden">
@@ -82,29 +92,19 @@ export default function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.9, duration: 0.5 }}
         >
-          <AnimatedButton variant="primary" size="lg" glow onClick={() => navigate('/dashboard')}>
+          <AnimatedButton variant="primary" size="lg" glow onClick={() => handleProtectedNav('/report')}>
             <Zap size={18} /> Get Started
           </AnimatedButton>
-          <AnimatedButton variant="ghost" size="lg" className="border border-white/10" onClick={() => navigate('/map')}>
+          <AnimatedButton
+            variant="ghost"
+            size="lg"
+            className="border border-white/10"
+            onClick={() => handleProtectedNav('/map')}
+          >
             <Map size={18} /> Explore Live Map <ArrowRight size={16} />
           </AnimatedButton>
         </motion.div>
 
-        {/* Scroll hint */}
-        <motion.div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
-        >
-          <motion.div
-            className="w-5 h-8 rounded-full border border-white/20 flex items-start justify-center pt-1.5 mx-auto"
-            animate={{ y: [0, 6, 0] }}
-            transition={{ duration: 1.6, repeat: Infinity }}
-          >
-            <div className="w-1 h-2 rounded-full bg-primary/60" />
-          </motion.div>
-        </motion.div>
       </div>
     </section>
   )

@@ -2,13 +2,19 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Shield, AlertTriangle } from 'lucide-react'
 import { useIssueStore } from '../store/useIssueStore'
-import IssueList from '../components/head-dashboard/IssueList'
 import SeverityFilter from '../components/head-dashboard/SeverityFilter'
 import TaskVerificationPanel from '../components/head-dashboard/TaskVerificationPanel'
+import VolunteerRequests from '../components/head-dashboard/VolunteerRequests'
+import WorkerAssignmentPanel from '../components/head-dashboard/WorkerAssignmentPanel'
+import { mockVolunteerRequests } from '../data/mockRequests'
+import IssueCardHead from '../components/head-dashboard/IssueCardHead'
 
 export default function Escalations() {
   const { issues, filter, setFilter, getPrioritySorted } = useIssueStore()
   const [selectedIssue, setSelectedIssue] = useState(null)
+  const [requests, setRequests] = useState(mockVolunteerRequests)
+  const [assignedTeams, setAssignedTeams] = useState({})
+  const [verifiedIssues, setVerifiedIssues] = useState(new Set())
 
   const sorted = getPrioritySorted()
   const filtered = filter === 'all'
@@ -16,6 +22,22 @@ export default function Escalations() {
     : sorted.filter((i) => i.severity === filter)
 
   const criticalCount = issues.filter((i) => i.severity === 'critical').length
+
+  const handleApprove = (id) => {
+    setRequests((prev) => prev.filter((r) => r.id !== id))
+  }
+
+  const handleReject = (id) => {
+    setRequests((prev) => prev.filter((r) => r.id !== id))
+  }
+
+  const handleAssign = (issueId) => {
+    setAssignedTeams((prev) => ({ ...prev, [issueId]: 'Ward Crew A' }))
+  }
+
+  const handleVerify = (issueId) => {
+    setVerifiedIssues((prev) => new Set([...prev, issueId]))
+  }
 
   return (
     <motion.main
@@ -69,22 +91,43 @@ export default function Escalations() {
         <SeverityFilter value={filter} onChange={setFilter} />
       </div>
 
-      {/* Main layout: list + panel */}
+      {/* Volunteer approvals */}
+      <div className="mb-6">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-meta text-primary">VOLUNTEER REQUESTS</span>
+          <span className="badge badge-ghost badge-sm">{requests.length} pending</span>
+        </div>
+        <VolunteerRequests requests={requests} onApprove={handleApprove} onReject={handleReject} />
+      </div>
+
+      {/* Main layout: cards + panels */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-        {/* Issue list */}
+        {/* Issue cards */}
         <div className="lg:col-span-3">
           <p className="text-meta text-base-content/40 mb-3">
             {filtered.length} issues — sorted by priority score
           </p>
-          <IssueList
-            issues={filtered}
-            onSelect={setSelectedIssue}
-            selectedId={selectedIssue?.id}
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {filtered.map((issue) => (
+              <IssueCardHead
+                key={issue.id}
+                issue={issue}
+                selected={selectedIssue?.id === issue.id}
+                onSelect={setSelectedIssue}
+              />
+            ))}
+          </div>
         </div>
 
-        {/* Verification panel */}
-        <div className="lg:col-span-2">
+        {/* Right column panels */}
+        <div className="lg:col-span-2 space-y-4">
+          <WorkerAssignmentPanel
+            issue={selectedIssue}
+            assignedTeam={selectedIssue ? assignedTeams[selectedIssue.id] : null}
+            verified={selectedIssue ? verifiedIssues.has(selectedIssue.id) : false}
+            onAssign={handleAssign}
+            onVerify={handleVerify}
+          />
           <TaskVerificationPanel issue={selectedIssue} />
         </div>
       </div>

@@ -1,35 +1,48 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Shield, Map, LayoutDashboard, BarChart2, Users, LogOut, Menu, X, Zap } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
 
 export default function Navbar() {
-  const { user, role, setRole, logout } = useAuth()
+  const { user, role, logout } = useAuth()
   const navigate = useNavigate()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const isAuthed = !!user
+  const [isScrolled, setIsScrolled] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setIsScrolled(window.scrollY > 0)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   const handleLogout = () => {
     logout()
     navigate('/login')
   }
 
-  const navLinks = [
-    { to: '/', label: 'Home', icon: Shield, end: true },
-    { to: '/map', label: 'Live Map', icon: Map },
-    { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    ...(role === 'local_head'
-      ? [
-          { to: '/head', label: 'Issue Queue', icon: Users },
-          { to: '/analytics', label: 'Analytics', icon: BarChart2 },
-        ]
-      : role === 'municipal'
-        ? [
-            { to: '/municipal', label: 'Municipal Desk', icon: Users },
-            { to: '/analytics', label: 'Analytics', icon: BarChart2 },
-          ]
-        : []),
-  ]
+  const navLinks = isAuthed
+    ? [
+        { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+        ...(role === 'citizen'
+          ? [{ to: '/report', label: 'Report Issue', icon: Zap }]
+          : []),
+        ...(role === 'local_head'
+          ? [
+              { to: '/head', label: 'Issue Queue', icon: Users },
+              { to: '/analytics', label: 'Analytics', icon: BarChart2 },
+            ]
+          : role === 'municipal'
+            ? [
+                { to: '/municipal', label: 'Municipal Desk', icon: Users },
+                { to: '/analytics', label: 'Analytics', icon: BarChart2 },
+              ]
+            : []),
+        { to: '/map', label: 'Live Map', icon: Map },
+      ]
+    : []
 
   const linkClass = ({ isActive }) =>
     `flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
@@ -38,11 +51,23 @@ export default function Navbar() {
         : 'text-base-content/60 hover:text-base-content hover:bg-white/5'
     }`
 
+  const brandTarget = !isAuthed
+    ? '/'
+    : role === 'local_head'
+      ? '/head'
+      : role === 'municipal'
+        ? '/municipal'
+        : '/dashboard'
+
   return (
-    <nav className="sticky top-0 z-50 glass-strong border-b border-white/5 h-16">
+    <nav
+      className={`sticky top-0 z-50 h-16 transition-colors duration-200 ${
+        isScrolled ? 'bg-transparent border-transparent shadow-none' : 'glass-strong border-b border-white/5'
+      }`}
+    >
       <div className="container mx-auto px-4 h-full flex items-center justify-between gap-4">
         {/* Brand */}
-        <NavLink to="/" className="flex items-center gap-2 shrink-0">
+        <NavLink to={brandTarget} className="flex items-center gap-2 shrink-0">
           <div className="w-8 h-8 rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center">
             <Shield size={15} className="text-primary" />
           </div>
@@ -64,15 +89,6 @@ export default function Navbar() {
         {/* Right section */}
         <div className="flex items-center gap-2 shrink-0">
           {/* Role switcher */}
-          <select
-            className="select select-xs glass border-white/10 text-xs hidden sm:flex"
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-          >
-            <option value="citizen">👤 Citizen</option>
-            <option value="local_head">🛡️ Local Head</option>
-            <option value="municipal">🏛️ Municipal</option>
-          </select>
 
           {/* Score chip */}
           {user && (
@@ -83,6 +99,12 @@ export default function Navbar() {
               </span>
               <span className="text-meta text-base-content/40 text-[0.6rem]">pts</span>
             </div>
+          )}
+
+          {!isAuthed && (
+            <button className="btn btn-primary btn-sm" onClick={() => navigate('/login')}>
+              Log In
+            </button>
           )}
 
           {/* Avatar dropdown */}
@@ -117,18 +139,20 @@ export default function Navbar() {
           )}
 
           {/* Mobile toggle */}
-          <button
-            className="md:hidden btn btn-ghost btn-sm btn-square"
-            onClick={() => setMobileOpen((o) => !o)}
-          >
-            {mobileOpen ? <X size={18} /> : <Menu size={18} />}
-          </button>
+          {isAuthed && (
+            <button
+              className="md:hidden btn btn-ghost btn-sm btn-square"
+              onClick={() => setMobileOpen((o) => !o)}
+            >
+              {mobileOpen ? <X size={18} /> : <Menu size={18} />}
+            </button>
+          )}
         </div>
       </div>
 
       {/* Mobile menu */}
       <AnimatePresence>
-        {mobileOpen && (
+        {isAuthed && mobileOpen && (
           <motion.div
             className="md:hidden glass-strong border-t border-white/5 px-4 py-3"
             initial={{ opacity: 0, height: 0 }}
@@ -150,15 +174,6 @@ export default function Navbar() {
                 </NavLink>
               ))}
             </div>
-            <select
-              className="select select-xs glass border-white/10 text-xs w-full"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-            >
-              <option value="citizen">👤 Citizen View</option>
-              <option value="local_head">🛡️ Local Head View</option>
-              <option value="municipal">🏛️ Municipal View</option>
-            </select>
           </motion.div>
         )}
       </AnimatePresence>

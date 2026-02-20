@@ -9,6 +9,7 @@ import Analytics from './pages/Analytics'
 import VolunteerTask from './pages/VolunteerTask'
 import Login from './pages/Login'
 import Municipal from './pages/Municipal'
+import ReportIssue from './pages/ReportIssue'
 
 function Layout() {
   return (
@@ -33,6 +34,7 @@ export default function App() {
             <Route path="/municipal" element={<Municipal />} />
             <Route path="/analytics" element={<Analytics />} />
             <Route path="/volunteer/:taskId" element={<VolunteerTask />} />
+            <Route path="/report" element={<ReportIssue />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

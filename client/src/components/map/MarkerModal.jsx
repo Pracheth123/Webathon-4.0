@@ -1,10 +1,11 @@
 import { motion } from 'framer-motion'
-import { MapPin, Clock, ThumbsUp, CheckSquare, Zap, ArrowUpCircle, X } from 'lucide-react'
+import { MapPin, Clock, ThumbsUp, CheckSquare, ArrowUpCircle, X, Eye, Shield } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import SeverityBadge from '../common/SeverityBadge'
 import AnimatedButton from '../common/AnimatedButton'
 import { api } from '../../services/api'
 import { useState } from 'react'
+import { useAuth } from '../../context/AuthContext'
 
 function timeAgo(dateStr) {
   const diff = Date.now() - new Date(dateStr).getTime()
@@ -19,6 +20,7 @@ export default function MarkerModal({ issue, onClose }) {
   const navigate = useNavigate()
   const [escalating, setEscalating] = useState(false)
   const [escalated, setEscalated] = useState(false)
+  const { role } = useAuth()
 
   if (!issue) return null
 
@@ -87,30 +89,56 @@ export default function MarkerModal({ issue, onClose }) {
 
         {/* Actions */}
         <div className="flex gap-2 pt-1">
-          <AnimatedButton
-            variant="primary"
-            size="sm"
-            className="flex-1"
-            onClick={() => navigate(`/volunteer/task_00${issue.id}`)}
-          >
-            <Zap size={13} /> Volunteer
-          </AnimatedButton>
-          <AnimatedButton
-            variant={escalated ? 'success' : 'error'}
-            size="sm"
-            className="flex-1"
-            disabled={escalating || escalated}
-            onClick={handleEscalate}
-          >
-            {escalating ? (
-              <span className="loading loading-spinner loading-xs" />
-            ) : (
-              <>
-                <ArrowUpCircle size={13} />
-                {escalated ? 'Escalated' : 'Escalate'}
-              </>
-            )}
-          </AnimatedButton>
+          {role === 'citizen' && (
+            <AnimatedButton
+              variant="primary"
+              size="sm"
+              className="flex-1"
+              onClick={() => navigate('/dashboard')}
+            >
+              <Eye size={13} /> Follow Progress
+            </AnimatedButton>
+          )}
+
+          {role === 'local_head' && (
+            <>
+              <AnimatedButton
+                variant="primary"
+                size="sm"
+                className="flex-1"
+                onClick={() => navigate('/head')}
+              >
+                <Shield size={13} /> Open Queue
+              </AnimatedButton>
+              <AnimatedButton
+                variant={escalated ? 'success' : 'error'}
+                size="sm"
+                className="flex-1"
+                disabled={escalating || escalated}
+                onClick={handleEscalate}
+              >
+                {escalating ? (
+                  <span className="loading loading-spinner loading-xs" />
+                ) : (
+                  <>
+                    <ArrowUpCircle size={13} />
+                    {escalated ? 'Escalated' : 'Escalate'}
+                  </>
+                )}
+              </AnimatedButton>
+            </>
+          )}
+
+          {role === 'municipal' && (
+            <AnimatedButton
+              variant="primary"
+              size="sm"
+              className="flex-1"
+              onClick={() => navigate('/municipal')}
+            >
+              <Shield size={13} /> Municipal Desk
+            </AnimatedButton>
+          )}
         </div>
       </div>
     </motion.div>
