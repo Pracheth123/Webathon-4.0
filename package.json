@@ -2,5 +2,21 @@
   "name": "civic-governance-platform",
   "version": "1.0.0",
   "private": true,
-  "description": "Civic Micro-Execution Governance Platform monorepo"
+  "description": "Civic Micro-Execution Governance Platform monorepo",
+  "main": "APP.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pracheth123/Webathon-4.0.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Pracheth123/Webathon-4.0/issues"
+  },
+  "homepage": "https://github.com/Pracheth123/Webathon-4.0#readme"
 }
