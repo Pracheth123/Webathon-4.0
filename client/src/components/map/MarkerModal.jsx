@@ -6,6 +6,7 @@ import AnimatedButton from '../common/AnimatedButton'
 import { api } from '../../services/api'
 import { useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
+import useVolunteerStore from '../../store/useVolunteerStore'
 
 function timeAgo(dateStr) {
   const diff = Date.now() - new Date(dateStr).getTime()
@@ -34,6 +35,9 @@ export default function MarkerModal({ issue, onClose }) {
     setEscalating(false)
     setEscalated(true)
   }
+
+  const addRequest = useVolunteerStore((s) => s.addRequest)
+  const [requested, setRequested] = useState(false)
 
   return (
     <motion.div
@@ -90,14 +94,39 @@ export default function MarkerModal({ issue, onClose }) {
         {/* Actions */}
         <div className="flex gap-2 pt-1">
           {role === 'citizen' && (
-            <AnimatedButton
-              variant="primary"
-              size="sm"
-              className="flex-1"
-              onClick={() => navigate('/dashboard')}
-            >
-              <Eye size={13} /> Follow Progress
-            </AnimatedButton>
+            <>
+              <AnimatedButton
+                variant="primary"
+                size="sm"
+                className="flex-1"
+                onClick={() => navigate('/dashboard')}
+              >
+                <Eye size={13} /> Follow Progress
+              </AnimatedButton>
+
+              {/* Volunteer CTA for medium/low severity */}
+              {['medium', 'low'].includes(issue.severity) && issue.status !== 'completed' && (
+                <AnimatedButton
+                  variant={requested ? 'success' : 'outline'}
+                  size="sm"
+                  className="flex-1"
+                  disabled={requested}
+                  onClick={async () => {
+                    setRequested(true)
+                    addRequest({
+                      taskTitle: `Volunteer for: ${issue.title}`,
+                      issueTitle: issue.title,
+                      estimatedTime: '30 min',
+                      volunteer: (useAuth().user?.name) || 'Anonymous',
+                      issueId: issue.id,
+                    })
+                    // Optionally inform backend (omitted for demo)
+                  }}
+                >
+                  {requested ? 'Requested' : 'Volunteer'}
+                </AnimatedButton>
+              )}
+            </>
           )}
 
           {role === 'local_head' && (

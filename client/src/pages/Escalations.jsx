@@ -1,43 +1,38 @@
-import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { Shield, AlertTriangle } from 'lucide-react'
-import { useIssueStore } from '../store/useIssueStore'
-import SeverityFilter from '../components/head-dashboard/SeverityFilter'
-import TaskVerificationPanel from '../components/head-dashboard/TaskVerificationPanel'
-import VolunteerRequests from '../components/head-dashboard/VolunteerRequests'
-import WorkerAssignmentPanel from '../components/head-dashboard/WorkerAssignmentPanel'
-import { mockVolunteerRequests } from '../data/mockRequests'
-import IssueCardHead from '../components/head-dashboard/IssueCardHead'
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Shield, AlertTriangle } from "lucide-react";
+import { useIssueStore } from "../store/useIssueStore";
+import SeverityFilter from "../components/head-dashboard/SeverityFilter";
+import TaskVerificationPanel from "../components/head-dashboard/TaskVerificationPanel";
+import VolunteerRequests from "../components/head-dashboard/VolunteerRequests";
+import WorkerAssignmentPanel from "../components/head-dashboard/WorkerAssignmentPanel";
+import useVolunteerStore from "../store/useVolunteerStore";
+import IssueCardHead from "../components/head-dashboard/IssueCardHead";
 
 export default function Escalations() {
-  const { issues, filter, setFilter, getPrioritySorted } = useIssueStore()
-  const [selectedIssue, setSelectedIssue] = useState(null)
-  const [requests, setRequests] = useState(mockVolunteerRequests)
-  const [assignedTeams, setAssignedTeams] = useState({})
-  const [verifiedIssues, setVerifiedIssues] = useState(new Set())
+  const { issues, filter, setFilter, getPrioritySorted } = useIssueStore();
+  const [selectedIssue, setSelectedIssue] = useState(null);
+  const store = useVolunteerStore();
+  const requests = store.requests;
+  const [assignedTeams, setAssignedTeams] = useState({});
+  const [verifiedIssues, setVerifiedIssues] = useState(new Set());
 
-  const sorted = getPrioritySorted()
-  const filtered = filter === 'all'
-    ? sorted
-    : sorted.filter((i) => i.severity === filter)
+  const sorted = getPrioritySorted();
+  const filtered =
+    filter === "all" ? sorted : sorted.filter((i) => i.severity === filter);
 
-  const criticalCount = issues.filter((i) => i.severity === 'critical').length
+  const criticalCount = issues.filter((i) => i.severity === "critical").length;
 
-  const handleApprove = (id) => {
-    setRequests((prev) => prev.filter((r) => r.id !== id))
-  }
+  const handleApprove = (id) => store.approveRequest(id);
+  const handleReject = (id) => store.rejectRequest(id);
 
-  const handleReject = (id) => {
-    setRequests((prev) => prev.filter((r) => r.id !== id))
-  }
-
-  const handleAssign = (issueId) => {
-    setAssignedTeams((prev) => ({ ...prev, [issueId]: 'Ward Crew A' }))
-  }
+  const handleAssign = (issueId, team) => {
+    setAssignedTeams((prev) => ({ ...prev, [issueId]: team || "Ward Crew A" }));
+  };
 
   const handleVerify = (issueId) => {
-    setVerifiedIssues((prev) => new Set([...prev, issueId]))
-  }
+    setVerifiedIssues((prev) => new Set([...prev, issueId]));
+  };
 
   return (
     <motion.main
@@ -64,7 +59,8 @@ export default function Escalations() {
           >
             <AlertTriangle size={16} />
             <span className="text-sm font-semibold">
-              {criticalCount} critical issue{criticalCount > 1 ? 's' : ''} require immediate attention
+              {criticalCount} critical issue{criticalCount > 1 ? "s" : ""}{" "}
+              require immediate attention
             </span>
           </motion.div>
         )}
@@ -73,14 +69,38 @@ export default function Escalations() {
       {/* Stats row */}
       <div className="stats stats-horizontal glass w-full mb-6 shadow-none">
         {[
-          { title: 'Total Open', value: issues.filter((i) => i.status !== 'completed').length, desc: 'Active issues', color: 'text-base-content' },
-          { title: 'Critical', value: issues.filter((i) => i.severity === 'critical').length, desc: 'Needs now', color: 'text-error' },
-          { title: 'In Progress', value: issues.filter((i) => i.status === 'in_progress').length, desc: 'Being addressed', color: 'text-warning' },
-          { title: 'Resolved', value: issues.filter((i) => i.status === 'completed').length, desc: 'This month', color: 'text-success' },
+          {
+            title: "Total Open",
+            value: issues.filter((i) => i.status !== "completed").length,
+            desc: "Active issues",
+            color: "text-base-content",
+          },
+          {
+            title: "Critical",
+            value: issues.filter((i) => i.severity === "critical").length,
+            desc: "Needs now",
+            color: "text-error",
+          },
+          {
+            title: "In Progress",
+            value: issues.filter((i) => i.status === "in_progress").length,
+            desc: "Being addressed",
+            color: "text-warning",
+          },
+          {
+            title: "Resolved",
+            value: issues.filter((i) => i.status === "completed").length,
+            desc: "This month",
+            color: "text-success",
+          },
         ].map((s) => (
           <div key={s.title} className="stat py-4 px-5">
-            <div className="stat-title text-base-content/50 text-xs">{s.title}</div>
-            <div className={`stat-value text-2xl font-black ${s.color}`}>{s.value}</div>
+            <div className="stat-title text-base-content/50 text-xs">
+              {s.title}
+            </div>
+            <div className={`stat-value text-2xl font-black ${s.color}`}>
+              {s.value}
+            </div>
             <div className="stat-desc text-base-content/30">{s.desc}</div>
           </div>
         ))}
@@ -95,9 +115,15 @@ export default function Escalations() {
       <div className="mb-6">
         <div className="flex items-center justify-between mb-3">
           <span className="text-meta text-primary">VOLUNTEER REQUESTS</span>
-          <span className="badge badge-ghost badge-sm">{requests.length} pending</span>
+          <span className="badge badge-ghost badge-sm">
+            {requests.length} pending
+          </span>
         </div>
-        <VolunteerRequests requests={requests} onApprove={handleApprove} onReject={handleReject} />
+        <VolunteerRequests
+          requests={requests}
+          onApprove={handleApprove}
+          onReject={handleReject}
+        />
       </div>
 
       {/* Main layout: cards + panels */}
@@ -123,8 +149,12 @@ export default function Escalations() {
         <div className="lg:col-span-2 space-y-4">
           <WorkerAssignmentPanel
             issue={selectedIssue}
-            assignedTeam={selectedIssue ? assignedTeams[selectedIssue.id] : null}
-            verified={selectedIssue ? verifiedIssues.has(selectedIssue.id) : false}
+            assignedTeam={
+              selectedIssue ? assignedTeams[selectedIssue.id] : null
+            }
+            verified={
+              selectedIssue ? verifiedIssues.has(selectedIssue.id) : false
+            }
             onAssign={handleAssign}
             onVerify={handleVerify}
           />
@@ -132,5 +162,5 @@ export default function Escalations() {
         </div>
       </div>
     </motion.main>
-  )
+  );
 }

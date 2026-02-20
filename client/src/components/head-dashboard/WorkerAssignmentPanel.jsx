@@ -28,6 +28,26 @@ export default function WorkerAssignmentPanel({ issue, assignedTeam, verified, o
         </div>
       </div>
 
+      {/* Available workers list when not assigned */}
+      {!assignedTeam && !issue.assignedTo && (
+        <div className="mb-3">
+          <div className="text-xs text-base-content/50 mb-2">Available Teams</div>
+          <div className="flex gap-2 flex-wrap">
+            {['Ward Crew A', 'Ward Crew B', 'Rapid Response Unit'].map((team) => (
+              <button
+                key={team}
+                className="btn btn-ghost btn-sm"
+                onClick={() => onAssign(issue.id, team)}
+              >
+                {team}
+              </button>
+            ))}
+          </div>
+          <div className="mt-2 text-xs text-warning">
+            If no team is assigned the task will be delayed.
+          </div>
+        </div>
+      )}
       <div className="flex gap-2">
         <button className="btn btn-primary btn-sm flex-1 gap-1" onClick={() => onAssign(issue.id)}>
           <UserPlus size={12} /> Assign Team
