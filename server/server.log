@@ -1,0 +1,39 @@
+
+> civic-governance-server@1.0.0 dev
+> nodemon server.js
+
+[33m[nodemon] 3.1.13[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): *.*[39m
+[33m[nodemon] watching extensions: js,mjs,cjs,json[39m
+[32m[nodemon] starting `node server.js`[39m
+✅ MongoDB connected successfully
+🔧 Setting up database indexes...
+
+📇 Creating User indexes...
+✅ User indexes created
+📇 Creating Society indexes...
+✅ Society indexes created
+📇 Creating Issue indexes...
+✅ Issue indexes created
+📇 Creating Contribution indexes...
+✅ Contribution indexes created
+📇 Creating Task indexes...
+✅ Task indexes created
+📇 Creating Analysis indexes...
+✅ Analysis indexes created
+📇 Creating Notification indexes...
+✅ Notification indexes created
+📇 Creating Badge indexes...
+✅ Badge indexes created
+
+✨ Database setup completed successfully!
+
+
+╔════════════════════════════════════════╗
+║  🚀 Server running on port 5001        ║
+║  📍 API: http://localhost:5001/api     ║
+║  🏥 Health: http://localhost:5001/api/health ║
+║  🔄 Frontend: http://localhost:5173 ║
+╚════════════════════════════════════════╝
+
